@@ -9,15 +9,7 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Noto Sans KR', sans-serif; background: #FFF8F5; color: #1a1a1a; min-height: 100vh; }
 
-  header {
-    background: white;
-    border-bottom: 1px solid #F0E8E0;
-    padding: 16px 24px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    position: sticky; top: 0; z-index: 10;
-  }
+  header { background: white; border-bottom: 1px solid #F0E8E0; padding: 16px 24px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 10; }
   header h1 { font-family: 'Gmarket Sans', sans-serif; font-size: 18px; font-weight: 700; color: #FF6B35; }
   .live { margin-left: auto; display: flex; align-items: center; gap: 6px; font-size: 12px; color: #999; }
   .dot { width: 7px; height: 7px; border-radius: 50%; background: #4CAF50; animation: pulse 2s infinite; }
@@ -28,36 +20,33 @@
 
   .name-box { background: white; border-radius: 14px; border: 1px solid #F0E8E0; padding: 18px 20px; margin-bottom: 20px; }
   .box-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; color: #aaa; text-transform: uppercase; margin-bottom: 8px; }
-  .name-input { width: 100%; padding: 10px 14px; font-size: 15px; font-family: 'Noto Sans KR', sans-serif; border: 1.5px solid #F0E8E0; border-radius: 10px; outline: none; background: #FFF8F5; transition: border-color 0.2s; }
+
+  .name-row { display: flex; gap: 8px; align-items: center; }
+  .name-input { flex: 1; padding: 10px 14px; font-size: 15px; font-family: 'Noto Sans KR', sans-serif; border: 1.5px solid #F0E8E0; border-radius: 10px; outline: none; background: #FFF8F5; transition: border-color 0.2s; }
   .name-input:focus { border-color: #FF6B35; }
+  .name-input.error { border-color: #FF3B30; background: #FFF5F5; }
+  .name-input:disabled { background: #F5F5F5; color: #888; cursor: not-allowed; }
+
+  .confirm-btn { padding: 10px 16px; font-size: 14px; font-family: 'Noto Sans KR', sans-serif; font-weight: 500; background: #FF6B35; color: white; border: none; border-radius: 10px; cursor: pointer; white-space: nowrap; transition: opacity 0.15s; }
+  .confirm-btn:hover { opacity: 0.85; }
+  .edit-btn { padding: 10px 14px; font-size: 13px; font-family: 'Noto Sans KR', sans-serif; background: white; color: #FF6B35; border: 1.5px solid #FF6B35; border-radius: 10px; cursor: pointer; white-space: nowrap; transition: all 0.15s; }
+  .edit-btn:hover { background: #FFF0E8; }
+
+  .name-status { margin-top: 6px; font-size: 12px; min-height: 18px; }
+  .name-status.error { color: #FF3B30; }
+  .name-status.success { color: #4CAF50; }
 
   .menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-
-  .menu-card {
-    background: white;
-    border-radius: 16px;
-    border: 2px solid #F0E8E0;
-    overflow: hidden;
-    cursor: pointer;
-    transition: all 0.18s;
-    position: relative;
-  }
+  .menu-card { background: white; border-radius: 16px; border: 2px solid #F0E8E0; overflow: hidden; cursor: pointer; transition: all 0.18s; position: relative; }
   .menu-card:hover { border-color: #FFB347; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,107,53,0.1); }
   .menu-card.selected { border-color: #FF6B35; box-shadow: 0 6px 24px rgba(255,107,53,0.2); }
-  .menu-card.selected::after {
-    content: '✓';
-    position: absolute; top: 8px; right: 8px;
-    width: 24px; height: 24px;
-    background: #FF6B35; color: white;
-    border-radius: 50%; font-size: 13px; font-weight: 700;
-    display: flex; align-items: center; justify-content: center;
-  }
+  .menu-card.selected::after { content: '✓'; position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; background: #FF6B35; color: white; border-radius: 50%; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
   .menu-card img { width: 100%; aspect-ratio: 1/1; object-fit: cover; display: block; }
   .menu-card-name { padding: 10px 12px; font-size: 14px; font-weight: 500; text-align: center; }
-  .menu-card .vote-pill { margin: 0 12px 10px; background: #FFF0E8; color: #FF6B35; font-size: 12px; font-weight: 700; text-align: center; padding: 4px 0; border-radius: 20px; }
   .menu-card.selected .menu-card-name { color: #FF6B35; }
+  .vote-pill { margin: 0 12px 10px; background: #FFF0E8; color: #FF6B35; font-size: 12px; font-weight: 700; text-align: center; padding: 4px 0; border-radius: 20px; }
 
-  .right-panel { }
+  .right-panel {}
   .panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
   .panel-title { font-family: 'Gmarket Sans', sans-serif; font-size: 16px; font-weight: 700; }
   .total-badge { background: #FF6B35; color: white; font-size: 12px; padding: 3px 10px; border-radius: 20px; font-weight: 500; }
@@ -85,7 +74,11 @@
   <div>
     <div class="name-box">
       <div class="box-label">내 이름</div>
-      <input class="name-input" id="name-input" type="text" placeholder="이름을 입력하세요" maxlength="10" />
+      <div class="name-row">
+        <input class="name-input" id="name-input" type="text" placeholder="이름을 입력하세요" maxlength="10" />
+        <button class="confirm-btn" id="confirm-btn" onclick="confirmName()">확인</button>
+      </div>
+      <div class="name-status" id="name-status"></div>
     </div>
 
     <div class="menu-grid" id="menu-grid">
@@ -140,12 +133,71 @@
   const MENUS = ['고양이1','고양이2','고양이3'];
 
   let votes = {};
+  let confirmedName = '';
+  let isConfirmed = false;
 
   function getName() { return document.getElementById('name-input').value.trim(); }
 
-  function render() {
+  window.confirmName = function() {
+    if (isConfirmed) {
+      // 수정 모드로 전환
+      const oldName = confirmedName;
+      isConfirmed = false;
+      confirmedName = '';
+      const input = document.getElementById('name-input');
+      input.disabled = false;
+      input.focus();
+      input.select();
+      document.getElementById('confirm-btn').textContent = '확인';
+      document.getElementById('confirm-btn').style.background = '#FF6B35';
+      document.getElementById('name-status').textContent = '';
+      document.getElementById('name-status').className = 'name-status';
+      // 기존 투표 삭제
+      remove(ref(db, 'votes/' + oldName));
+      return;
+    }
+
     const name = getName();
-    const myVote = votes[name] || null;
+    const statusEl = document.getElementById('name-status');
+    const input = document.getElementById('name-input');
+
+    if (!name) {
+      input.classList.add('error');
+      statusEl.textContent = '이름을 입력해주세요';
+      statusEl.className = 'name-status error';
+      return;
+    }
+
+    // 중복 체크
+    if (votes[name] !== undefined || Object.keys(votes).includes(name)) {
+      // 이미 투표한 이름이면 본인 확인 불가
+      input.classList.add('error');
+      statusEl.textContent = '이미 사용 중인 이름이에요 😅';
+      statusEl.className = 'name-status error';
+      return;
+    }
+
+    // 확인 완료
+    isConfirmed = true;
+    confirmedName = name;
+    input.disabled = true;
+    input.classList.remove('error');
+    document.getElementById('confirm-btn').textContent = '✏️ 수정';
+    document.getElementById('confirm-btn').style.background = 'white';
+    document.getElementById('confirm-btn').style.color = '#FF6B35';
+    document.getElementById('confirm-btn').style.border = '1.5px solid #FF6B35';
+    statusEl.textContent = confirmedName + '님, 반가워요! 🐱';
+    statusEl.className = 'name-status success';
+    renderMenus();
+  };
+
+  function render() {
+    renderMenus();
+    renderVotes();
+  }
+
+  function renderMenus() {
+    const myVote = isConfirmed ? (votes[confirmedName] || null) : null;
     const counts = {'고양이1':0,'고양이2':0,'고양이3':0};
     Object.values(votes).forEach(v => { if(counts[v]!==undefined) counts[v]++; });
 
@@ -155,7 +207,9 @@
       card.className = 'menu-card' + (myVote===m?' selected':'');
       countEl.textContent = counts[m] + '표';
     });
+  }
 
+  function renderVotes() {
     const entries = Object.entries(votes);
     document.getElementById('total-badge').textContent = entries.length + '명';
     const vl = document.getElementById('vote-list');
@@ -173,24 +227,69 @@
   }
 
   window.vote = async function(menu) {
-    const name = getName();
-    if (!name) { document.getElementById('name-input').focus(); return; }
-    const voteRef = ref(db, 'votes/' + name);
-    if (votes[name] === menu) await remove(voteRef);
+    if (!isConfirmed) {
+      document.getElementById('name-input').focus();
+      document.getElementById('name-status').textContent = '먼저 이름을 확인해주세요!';
+      document.getElementById('name-status').className = 'name-status error';
+      return;
+    }
+    const voteRef = ref(db, 'votes/' + confirmedName);
+    if (votes[confirmedName] === menu) await remove(voteRef);
     else await set(voteRef, menu);
   };
 
   window.resetAll = async function() {
     if (!confirm('투표를 전체 초기화할까요?')) return;
     await remove(ref(db, 'votes'));
+    isConfirmed = false;
+    confirmedName = '';
+    const input = document.getElementById('name-input');
+    input.disabled = false;
+    input.value = '';
+    document.getElementById('confirm-btn').textContent = '확인';
+    document.getElementById('confirm-btn').style.cssText = '';
+    document.getElementById('name-status').textContent = '';
+    document.getElementById('name-status').className = 'name-status';
   };
 
   onValue(ref(db, 'votes'), (snap) => {
     votes = snap.val() || {};
+    // 중복 체크 실시간 반영
+    if (!isConfirmed) {
+      const name = getName();
+      const statusEl = document.getElementById('name-status');
+      const input = document.getElementById('name-input');
+      if (name && votes[name] !== undefined) {
+        input.classList.add('error');
+        statusEl.textContent = '이미 사용 중인 이름이에요 😅';
+        statusEl.className = 'name-status error';
+      } else if (name) {
+        input.classList.remove('error');
+        statusEl.textContent = '';
+        statusEl.className = 'name-status';
+      }
+    }
     render();
   });
 
-  document.getElementById('name-input').addEventListener('input', render);
+  document.getElementById('name-input').addEventListener('input', () => {
+    const name = getName();
+    const statusEl = document.getElementById('name-status');
+    const input = document.getElementById('name-input');
+    if (name && votes[name] !== undefined) {
+      input.classList.add('error');
+      statusEl.textContent = '이미 사용 중인 이름이에요 😅';
+      statusEl.className = 'name-status error';
+    } else {
+      input.classList.remove('error');
+      statusEl.textContent = '';
+      statusEl.className = 'name-status';
+    }
+  });
+
+  document.getElementById('name-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') window.confirmName();
+  });
 </script>
 </body>
 </html>
