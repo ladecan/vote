@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🐱 오늘의 선택</title>
+<link href="https://fonts.googleapis.com/css2?family=Gmarket+Sans:wght@300;500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Noto Sans KR', sans-serif; background: #FFF8F5; color: #1a1a1a; min-height: 100vh; }
+
+  header {
+    background: white;
+    border-bottom: 1px solid #F0E8E0;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: sticky; top: 0; z-index: 10;
+  }
+  header h1 { font-family: 'Gmarket Sans', sans-serif; font-size: 18px; font-weight: 700; color: #FF6B35; }
+  .live { margin-left: auto; display: flex; align-items: center; gap: 6px; font-size: 12px; color: #999; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: #4CAF50; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  .container { max-width: 960px; margin: 0 auto; padding: 24px 16px; display: grid; grid-template-columns: 1fr 320px; gap: 24px; }
+  @media(max-width:700px){ .container{ grid-template-columns:1fr; } }
+
+  .name-box { background: white; border-radius: 14px; border: 1px solid #F0E8E0; padding: 18px 20px; margin-bottom: 20px; }
+  .box-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; color: #aaa; text-transform: uppercase; margin-bottom: 8px; }
+  .name-input { width: 100%; padding: 10px 14px; font-size: 15px; font-family: 'Noto Sans KR', sans-serif; border: 1.5px solid #F0E8E0; border-radius: 10px; outline: none; background: #FFF8F5; transition: border-color 0.2s; }
+  .name-input:focus { border-color: #FF6B35; }
+
+  .menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+
+  .menu-card {
+    background: white;
+    border-radius: 16px;
+    border: 2px solid #F0E8E0;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.18s;
+    position: relative;
+  }
+  .menu-card:hover { border-color: #FFB347; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,107,53,0.1); }
+  .menu-card.selected { border-color: #FF6B35; box-shadow: 0 6px 24px rgba(255,107,53,0.2); }
+  .menu-card.selected::after {
+    content: '✓';
+    position: absolute; top: 8px; right: 8px;
+    width: 24px; height: 24px;
+    background: #FF6B35; color: white;
+    border-radius: 50%; font-size: 13px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .menu-card img { width: 100%; aspect-ratio: 1/1; object-fit: cover; display: block; }
+  .menu-card-name { padding: 10px 12px; font-size: 14px; font-weight: 500; text-align: center; }
+  .menu-card .vote-pill { margin: 0 12px 10px; background: #FFF0E8; color: #FF6B35; font-size: 12px; font-weight: 700; text-align: center; padding: 4px 0; border-radius: 20px; }
+  .menu-card.selected .menu-card-name { color: #FF6B35; }
+
+  .right-panel { }
+  .panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .panel-title { font-family: 'Gmarket Sans', sans-serif; font-size: 16px; font-weight: 700; }
+  .total-badge { background: #FF6B35; color: white; font-size: 12px; padding: 3px 10px; border-radius: 20px; font-weight: 500; }
+  .reset-btn { font-size: 12px; color: #bbb; background: none; border: none; cursor: pointer; text-decoration: underline; }
+  .reset-btn:hover { color: #FF6B35; }
+
+  .vote-list { display: flex; flex-direction: column; gap: 8px; }
+  .vote-item { background: white; border: 1px solid #F0E8E0; border-radius: 12px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; animation: fadeIn 0.2s ease; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+  .avatar { width: 34px; height: 34px; border-radius: 50%; background: #FFF0E8; color: #FF6B35; font-size: 14px; font-weight: 700; font-family: 'Gmarket Sans', sans-serif; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 1.5px solid #FFD0B8; }
+  .v-name { font-size: 14px; font-weight: 500; flex: 1; }
+  .v-menu { font-size: 12px; color: #FF6B35; background: #FFF0E8; padding: 3px 10px; border-radius: 20px; font-weight: 500; }
+  .empty { text-align: center; color: #bbb; font-size: 14px; padding: 2.5rem 1rem; background: white; border-radius: 14px; border: 1px solid #F0E8E0; }
+</style>
+</head>
+<body>
+
+<header>
+  <span style="font-size:20px">🐱</span>
+  <h1>오늘의 선택</h1>
+  <div class="live"><div class="dot"></div>실시간</div>
+</header>
+
+<div class="container">
+  <div>
+    <div class="name-box">
+      <div class="box-label">내 이름</div>
+      <input class="name-input" id="name-input" type="text" placeholder="이름을 입력하세요" maxlength="10" />
+    </div>
+
+    <div class="menu-grid" id="menu-grid">
+      <div class="menu-card" id="card-0" onclick="vote('고양이1')">
+        <img src="data:image/jpeg;base64,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" alt="고양이1" />
+        <div class="menu-card-name">고양이1</div>
+        <div class="vote-pill" id="count-0">0표</div>
+      </div>
+      <div class="menu-card" id="card-1" onclick="vote('고양이2')">
+        <img src="data:image/jpeg;base64,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" alt="고양이2" />
+        <div class="menu-card-name">고양이2</div>
+        <div class="vote-pill" id="count-1">0표</div>
+      </div>
+      <div class="menu-card" id="card-2" onclick="vote('고양이3')">
+        <img src="data:image/jpeg;base64,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" alt="고양이3" />
+        <div class="menu-card-name">고양이3</div>
+        <div class="vote-pill" id="count-2">0표</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="right-panel">
+    <div class="panel-header">
+      <span class="panel-title">투표 현황</span>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="total-badge" id="total-badge">0명</span>
+        <button class="reset-btn" onclick="resetAll()">초기화</button>
+      </div>
+    </div>
+    <div class="vote-list" id="vote-list">
+      <div class="empty">아직 투표한 사람이 없어요 🐾</div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyChJw-PXQYtwFtbd3me4o4XJNLilOqHyic",
+    authDomain: "lunch-43f33.firebaseapp.com",
+    databaseURL: "https://lunch-43f33-default-rtdb.firebaseio.com",
+    projectId: "lunch-43f33",
+    storageBucket: "lunch-43f33.firebasestorage.app",
+    messagingSenderId: "1054522593574",
+    appId: "1:1054522593574:web:b992eb5a53e43d8cbc31e7"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const MENUS = ['고양이1','고양이2','고양이3'];
+
+  let votes = {};
+
+  function getName() { return document.getElementById('name-input').value.trim(); }
+
+  function render() {
+    const name = getName();
+    const myVote = votes[name] || null;
+    const counts = {'고양이1':0,'고양이2':0,'고양이3':0};
+    Object.values(votes).forEach(v => { if(counts[v]!==undefined) counts[v]++; });
+
+    MENUS.forEach((m, i) => {
+      const card = document.getElementById('card-'+i);
+      const countEl = document.getElementById('count-'+i);
+      card.className = 'menu-card' + (myVote===m?' selected':'');
+      countEl.textContent = counts[m] + '표';
+    });
+
+    const entries = Object.entries(votes);
+    document.getElementById('total-badge').textContent = entries.length + '명';
+    const vl = document.getElementById('vote-list');
+    if (entries.length === 0) {
+      vl.innerHTML = '<div class="empty">아직 투표한 사람이 없어요 🐾</div>';
+      return;
+    }
+    vl.innerHTML = '';
+    entries.forEach(([n, m]) => {
+      const el = document.createElement('div');
+      el.className = 'vote-item';
+      el.innerHTML = `<div class="avatar">${n.charAt(0)}</div><span class="v-name">${n}</span><span class="v-menu">${m}</span>`;
+      vl.appendChild(el);
+    });
+  }
+
+  window.vote = async function(menu) {
+    const name = getName();
+    if (!name) { document.getElementById('name-input').focus(); return; }
+    const voteRef = ref(db, 'votes/' + name);
+    if (votes[name] === menu) await remove(voteRef);
+    else await set(voteRef, menu);
+  };
+
+  window.resetAll = async function() {
+    if (!confirm('투표를 전체 초기화할까요?')) return;
+    await remove(ref(db, 'votes'));
+  };
+
+  onValue(ref(db, 'votes'), (snap) => {
+    votes = snap.val() || {};
+    render();
+  });
+
+  document.getElementById('name-input').addEventListener('input', render);
+</script>
+</body>
+</html>
